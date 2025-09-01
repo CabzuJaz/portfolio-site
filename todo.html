@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>To-Do App</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .todo-app { max-width: 400px; margin: auto; }
+    ul { list-style: none; padding: 0; }
+    li { display: flex; justify-content: space-between; padding: 8px; margin: 5px 0; background: #f1f3f6; border-radius: 6px; }
+    li.completed { text-decoration: line-through; opacity: 0.6; }
+  </style>
+</head>
+<body>
+  <div class="todo-app">
+    <h1>To-Do List</h1>
+    <input type="text" id="task-input" placeholder="Enter a task..." />
+    <button id="add-task">Add</button>
+    <ul id="task-list"></ul>
+  </div>
+  <script>
+    const taskInput = document.getElementById("task-input");
+    const addTaskBtn = document.getElementById("add-task");
+    const taskList = document.getElementById("task-list");
+
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    function renderTasks() {
+      taskList.innerHTML = "";
+      tasks.forEach((task, index) => {
+        const li = document.createElement("li");
+        li.className = task.completed ? "completed" : "";
+        li.innerHTML = `
+          <span>${task.text}</span>
+          <div>
+            <button onclick="toggleTask(${index})">✔</button>
+            <button onclick="deleteTask(${index})">✖</button>
+          </div>
+        `;
+        taskList.appendChild(li);
+      });
+    }
+
+    addTaskBtn.addEventListener("click", () => {
+      if (taskInput.value.trim() !== "") {
+        tasks.push({ text: taskInput.value, completed: false });
+        taskInput.value = "";
+        saveTasks();
+      }
+    });
+
+    function toggleTask(index) {
+      tasks[index].completed = !tasks[index].completed;
+      saveTasks();
+    }
+
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      saveTasks();
+    }
+
+    function saveTasks() {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      renderTasks();
+    }
+
+    renderTasks();
+  </script>
+</body>
+</html>
